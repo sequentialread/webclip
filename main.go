@@ -1,9 +1,9 @@
 package main
 
 import (
-	"fmt"
-	"io/ioutil"
-	"net/http"
+  "fmt"
+  "io/ioutil"
+  "net/http"
   "strings"
   "io"
   "bytes"
@@ -28,8 +28,8 @@ function wrapper {
 
   if [ ! -f "$filename" ]; then
     echo "Error: $filename is not a file."
-		exit 1
-	fi
+    exit 1
+  fi
 
   curl -s -X POST -H "X-File-Name: $filename" -H "Content-Type: application/octet-stream" --data-binary "@$filename" https://%s/
 }
@@ -42,22 +42,22 @@ wrapper
       response.Header().Set("Content-Disposition", fmt.Sprintf("inline; filename=%s", filename))
       response.Header().Add("Content-Type", "application/octet-stream")
       io.Copy(response, bytes.NewBuffer(clipboard))
-			clipboard = make([]byte, 0)
-			filename = ""
+      clipboard = make([]byte, 0)
+      filename = ""
     } else {
-			response.Header().Add("content-type", "text/plain")
-  		response.WriteHeader(500)
+      response.Header().Add("content-type", "text/plain")
+      response.WriteHeader(500)
       fmt.Fprint(response, "404 nothing in webclip.\n")
-		}
+    }
   }
 
   if request.Method == "POST" {
     bodyBytes, err := ioutil.ReadAll(request.Body)
-  	if err != nil {
-			response.Header().Add("content-type", "text/plain")
-  		response.WriteHeader(500)
+    if err != nil {
+      response.Header().Add("content-type", "text/plain")
+      response.WriteHeader(500)
       fmt.Fprint(response, "500 internal server error: could not read body.\n")
-  	} else {
+    } else {
       filename = request.Header.Get("X-File-Name")
       clipboard = bodyBytes
       response.WriteHeader(200)
@@ -68,6 +68,6 @@ wrapper
 }
 
 func main() {
-	http.HandleFunc("/", mainHandler)
-	http.ListenAndServe(":8080", nil)
+  http.HandleFunc("/", mainHandler)
+  http.ListenAndServe(":8080", nil)
 }
